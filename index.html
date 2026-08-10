@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex">
+<title>参加をきろくする</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hd">
+  <h1>参加をきろくする</h1>
+  <div class="date" id="today">—</div>
+</header>
+
+<main class="main">
+
+  <div class="note" id="loading">
+    <div class="spinner" aria-hidden="true"></div>
+    よみこんでいます…
+  </div>
+
+  <div class="error" id="error" hidden>
+    <div id="errorText"></div>
+    <button class="btn-ghost" id="retry" type="button">もう一度よみこむ</button>
+  </div>
+
+  <!-- ① 事業所（初回だけえらぶ。次からは覚えている） -->
+  <section class="card" id="vendorCard" hidden>
+    <div class="chosen">
+      <div>
+        <div class="label">あなたの事業所</div>
+        <div class="name" id="vendorName">—</div>
+      </div>
+      <button class="btn-ghost" id="changeVendor" type="button">変更</button>
+    </div>
+  </section>
+
+  <!-- ② 企画をえらぶ -->
+  <section class="card" id="projectCard" hidden>
+    <div class="card-hd"><h2>さんかした企画をえらぶ</h2></div>
+    <div class="card-bd">
+      <div class="list" id="projectList"></div>
+      <div class="note" id="noProject" hidden>
+        企画がまだ登録されていません。<br>協議会で企画が決まると、ここにボタンが出ます。
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <button class="btn-primary" id="submit" type="button" disabled>参加をおくる</button>
+</footer>
+
+<!-- 事業所えらび（全画面） -->
+<div class="sheet" id="vendorSheet" hidden role="dialog" aria-modal="true" aria-label="事業所をえらぶ">
+  <div class="sheet-hd">
+    <div class="sheet-hd-top">
+      <h2>事業所をえらぶ</h2>
+      <button class="btn-ghost" id="closeSheet" type="button" hidden>やめる</button>
+    </div>
+    <input class="search" id="search" type="search" inputmode="search"
+           placeholder="名前でさがす" autocomplete="off" enterkeyhint="done">
+    <div class="rows" id="rowTabs"></div>
+  </div>
+  <div class="sheet-bd">
+    <div class="list" id="vendorList"></div>
+    <div class="note" id="noVendor" hidden>あてはまる事業所がありません。</div>
+  </div>
+</div>
+
+<!-- 完了 -->
+<div class="done" id="done" hidden role="status">
+  <div class="mark" id="doneMark" aria-hidden="true">✓</div>
+  <h2 id="doneTitle">参加を記録しました</h2>
+  <p class="detail" id="doneDetail"></p>
+  <p class="detail" id="doneNote" hidden></p>
+  <div class="actions">
+    <button class="btn-primary" id="doneBack" type="button">もどる</button>
+  </div>
+</div>
+
+<script src="assets/api.js"></script>
+<script src="assets/sanka.js"></script>
+</body>
+</html>

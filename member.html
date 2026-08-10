@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex">
+<title>メンバー報告</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hd">
+  <h1>メンバー報告</h1>
+  <div class="date" id="today">—</div>
+</header>
+
+<main class="main">
+
+  <div class="note" id="loading">
+    <div class="spinner" aria-hidden="true"></div>
+    よみこんでいます…
+  </div>
+
+  <div class="error" id="error" hidden>
+    <div id="errorText"></div>
+    <button class="btn-ghost" id="retry" type="button">もう一度よみこむ</button>
+  </div>
+
+  <!-- ① 種別 -->
+  <section class="card" id="typeCard" hidden>
+    <div class="card-hd"><h2>① 種別をえらぶ</h2></div>
+    <div class="card-bd">
+      <div class="list" id="typeList"></div>
+      <div class="leader" id="leaderLine" hidden>
+        <span class="leader-label">リーダー</span>
+        <span class="leader-name" id="leaderName"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 企画 -->
+  <section class="card" id="projectCard" hidden>
+    <div class="card-hd"><h2>② 企画をえらぶ</h2></div>
+    <div class="card-bd">
+      <div class="list" id="projectList"></div>
+      <div class="note" id="noProject" hidden>この種別の企画がまだありません。</div>
+    </div>
+  </section>
+
+  <!-- ③ 内容 -->
+  <section class="card" id="contentCard" hidden>
+    <div class="card-hd"><h2>③ 活動内容</h2></div>
+    <div class="card-bd">
+      <textarea class="textarea" id="content" rows="4"
+                placeholder="やったこと、気づいたこと、次回への申し送りなど"></textarea>
+    </div>
+  </section>
+
+  <!-- ④ 経費 -->
+  <section class="card" id="costCard" hidden>
+    <div class="card-hd">
+      <h2>④ 経費</h2>
+      <span class="sum" id="costSum">合計 0円</span>
+    </div>
+    <div class="card-bd">
+      <div id="costRows"></div>
+      <button class="btn-ghost add" id="addCost" type="button">＋ 行を追加</button>
+      <div class="hint">かかっていなければ、空のままで大丈夫です。</div>
+    </div>
+  </section>
+
+  <!-- ⑤ 良い業者 -->
+  <section class="card" id="goodCard" hidden>
+    <div class="card-hd">
+      <h2>⑤ 良かった業者</h2>
+      <span class="sum" id="goodCount"></span>
+    </div>
+    <div class="card-bd">
+      <div class="note" id="goodLoading" hidden>
+        <div class="spinner" aria-hidden="true"></div>
+        この企画に参加した業者をさがしています…
+      </div>
+      <div class="list" id="goodList"></div>
+      <div class="note" id="noGood" hidden>
+        この企画には、まだ参加記録がありません。<br>
+        参加者アプリからの入力が入ると、ここに業者が出ます。
+      </div>
+      <div class="hint" id="goodHint" hidden>いくつでも選べます。無理に選ばなくて大丈夫です。</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <button class="btn-primary" id="submit" type="button" disabled>報告をおくる</button>
+</footer>
+
+<!-- 完了 -->
+<div class="done" id="done" hidden role="status">
+  <div class="mark" aria-hidden="true">✓</div>
+  <h2>報告を記録しました</h2>
+  <p class="detail" id="doneDetail"></p>
+  <div class="actions">
+    <button class="btn-primary" id="doneBack" type="button">つづけて別の報告をする</button>
+  </div>
+</div>
+
+<script src="assets/api.js"></script>
+<script src="assets/member.js"></script>
+</body>
+</html>
