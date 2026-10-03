@@ -322,6 +322,45 @@ button { cursor: pointer; }
   padding: 14px 16px calc(env(safe-area-inset-bottom) + 24px);
 }
 
+/* 一覧にない事業所を足す（シートの一番下） */
+.new-vendor {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+}
+
+.new-open { width: 100%; min-height: var(--tap); }
+
+.new-form[hidden] { display: none; }
+
+.new-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.new-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.new-form .btn-primary { margin-top: 8px; }
+
+.new-err[hidden] { display: none; }
+
+.new-err {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--danger-weak);
+  color: var(--danger);
+  font-weight: 700;
+}
+
 /* ---------- メンバーアプリ用 ---------- */
 
 .leader {

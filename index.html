@@ -69,7 +69,24 @@
   </div>
   <div class="sheet-bd">
     <div class="list" id="vendorList"></div>
-    <div class="note" id="noVendor" hidden>あてはまる事業所がありません。</div>
+    <div class="note" id="noVendor" hidden>あてはまる事業所がありません。<br>下のボタンから登録できます。</div>
+
+    <!-- 一覧にない事業所を足す -->
+    <div class="new-vendor">
+      <button class="btn-ghost new-open" id="openNew" type="button">＋ 一覧にない事業所を登録する</button>
+      <form class="new-form" id="newForm" hidden novalidate>
+        <label class="new-label" for="newName">事業所名</label>
+        <input class="search" id="newName" type="text" maxlength="40"
+               autocomplete="organization" enterkeyhint="next" placeholder="例：介護タクシー陽気">
+        <label class="new-label" for="newYomi">よみ（ひらがな・なくてもよい）</label>
+        <input class="search" id="newYomi" type="text" maxlength="40"
+               autocomplete="off" enterkeyhint="done" placeholder="例：かいごたくしーようき">
+        <label class="new-label" for="newProject">参加した企画（かならず）</label>
+        <select class="search" id="newProject"></select>
+        <div class="new-err" id="newErr" hidden></div>
+        <button class="btn-primary" id="newSubmit" type="submit">登録して 参加をおくる</button>
+      </form>
+    </div>
   </div>
 </div>
 

@@ -20,6 +20,12 @@ const PAYLOAD = {
     return { vendorId, projectId };
   },
 
+  // 参加者アプリ → 業者マスター（一覧にない事業所を自分で足す）
+  // 区分は送らない。GASが「会員」を入れる。執行部の人はシートで直す。
+  vendor({ vendorName, yomi }) {
+    return { vendorName, yomi };
+  },
+
   // メンバーアプリ → メンバー報告シート
   // 種別とリーダーはGASが自動で埋める。送らないこと（第3部の指定）。
   report({ projectId, content, expenses, goodVendors }) {

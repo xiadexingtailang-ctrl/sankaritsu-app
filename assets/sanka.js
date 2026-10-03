@@ -15,6 +15,7 @@ const state = {
   rowFilter: 'すべて',
   keyword: '',
   sending: false,
+  creating: false,   // 事業所を登録している最中
 };
 
 /* ---------- 50音の行わけ ---------- */
@@ -179,10 +180,134 @@ function openSheet(cancelable) {
 
 function closeSheet() {
   el('vendorSheet').hidden = true;
+  closeNewForm();
 }
 
 function updateSubmit() {
   el('submit').disabled = !(state.vendorId && state.projectId) || state.sending;
+}
+
+/* ---------- 一覧にない事業所を足す ----------
+   不正防止のため、登録には「事業所名」と「参加した企画」の2つを必須にする。
+   登録と参加の記録を一度に送るので、名前だけ登録して数を稼ぐことはできない。
+
+   GASの createVendor は同じ名前でもそのまま行を足す（二重チェックが無い）。
+   なので、ここで先に一覧と見くらべて、同じ名前ならその事業所で参加だけを送る。
+   同じ事業所が V05・V06 と2つに割れると、参加回数も2つに割れて判定がくるう。 */
+
+// 「介護タクシー　陽気」「ｶｲｺﾞタクシー陽気」などを同じものとして見る
+function nameKey(name) {
+  return toHiragana(String(name).normalize('NFKC'))
+    .replace(/[\s・･.\-ー－]/g, '')
+    .toLowerCase();
+}
+
+function findSameVendor(name) {
+  const key = nameKey(name);
+  return state.vendors.find((v) => nameKey(v.name) === key) || null;
+}
+
+function fillNewProjects() {
+  const select = el('newProject');
+  select.textContent = '';
+  const first = document.createElement('option');
+  first.value = '';
+  first.textContent = state.projects.length ? 'えらんでください' : '企画がまだありません';
+  select.append(first);
+  for (const project of state.projects) {
+    const option = document.createElement('option');
+    option.value = project.id;
+    option.textContent = project.date ? `${project.name}（${project.date}）` : project.name;
+    select.append(option);
+  }
+  select.value = state.projectId || '';
+}
+
+function openNewForm() {
+  el('openNew').hidden = true;
+  el('newForm').hidden = false;
+  el('newErr').hidden = true;
+  el('newName').value = state.keyword.trim();
+  el('newYomi').value = '';
+  fillNewProjects();
+  el('newName').focus();
+}
+
+function closeNewForm() {
+  el('openNew').hidden = false;
+  el('newForm').hidden = true;
+}
+
+function showNewError(message) {
+  el('newErr').textContent = message;
+  el('newErr').hidden = false;
+}
+
+async function submitNewVendor(event) {
+  event.preventDefault();
+  if (state.creating || state.sending) return;
+  el('newErr').hidden = true;
+
+  const name = el('newName').value.normalize('NFKC').replace(/\s+/g, ' ').trim();
+  const yomiRaw = toHiragana(el('newYomi').value.trim());
+  const project = state.projects.find((p) => p.id === el('newProject').value);
+
+  if (!name) {
+    showNewError('事業所名を入れてください。');
+    el('newName').focus();
+    return;
+  }
+  if (yomiRaw && !cleanYomi(yomiRaw)) {
+    showNewError('よみは ひらがな で入れてください（わからなければ空のままでだいじょうぶです）。');
+    el('newYomi').focus();
+    return;
+  }
+  if (!project) {
+    showNewError('参加した企画をえらんでください。');
+    el('newProject').focus();
+    return;
+  }
+
+  // すでに一覧にあるなら、新しく作らずにその事業所で参加だけを送る
+  const same = findSameVendor(name);
+  const message = same
+    ? `「${same.name}」はすでに登録されています。\n「${project.name}」の参加をおくります。`
+    : `「${name}」を登録して、\n「${project.name}」の参加をおくります。\nまちがいありませんか？`;
+  if (!window.confirm(message)) return;
+
+  state.creating = true;
+  const button = el('newSubmit');
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = 'おくっています…';
+
+  try {
+    let vendorId = same ? same.id : '';
+    if (!same) {
+      const result = await apiPost('createVendor', PAYLOAD.vendor({
+        vendorName: name,
+        yomi: yomiRaw,
+      }));
+      vendorId = String(result.vendorId || '');
+      if (!vendorId) throw new Error('登録できたか確かめられませんでした。協議会に連絡してください。');
+      state.vendors.push({ id: vendorId, name, kubun: '会員', yomi: yomiRaw });
+    }
+
+    // 事業所をえらんだ状態にして、そのまま参加をおくる。
+    // 参加の送信がしくじっても、事業所と企画はえらばれたまま残るので
+    // 「参加をおくる」をもう一度押せばよい（エラーは上に出る）。
+    selectVendor(vendorId);
+    state.projectId = project.id;
+    renderProjects();
+    state.creating = false;
+    await submit();
+  } catch (e) {
+    showNewError(e.message);
+  } finally {
+    state.creating = false;
+    button.disabled = false;
+    button.textContent = label;
+  }
 }
 
 /* ---------- おくる ----------
@@ -296,6 +421,8 @@ function sortProjects(projects) {
 el('changeVendor').addEventListener('click', () => openSheet(true));
 el('closeSheet').addEventListener('click', closeSheet);
 el('retry').addEventListener('click', boot);
+el('openNew').addEventListener('click', openNewForm);
+el('newForm').addEventListener('submit', submitNewVendor);
 el('submit').addEventListener('click', submit);
 
 el('search').addEventListener('input', (event) => {
