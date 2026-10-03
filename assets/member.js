@@ -50,7 +50,15 @@ function renderTypes() {
     list.append(button);
   }
 
-  const leader = state.type ? state.leaders[state.type] : '';
+  renderLeader();
+}
+
+/* リーダーは、企画をえらんだら「その企画のリーダー」を出す。
+   企画ごとにリーダーが種別のリーダーとちがうことがある
+   （例：社会貢献のリーダーはかおり、ごみ拾いの企画はいまここ）。 */
+function renderLeader() {
+  const project = state.projects.find((p) => p.id === state.projectId);
+  const leader = (project && project.leader) || (state.type ? state.leaders[state.type] : '');
   el('leaderLine').hidden = !leader;
   el('leaderName').textContent = leader || '';
 }
@@ -118,6 +126,7 @@ async function selectProject(projectId) {
   state.good.clear();
 
   renderProjects();
+  renderLeader();
   el('contentCard').hidden = false;
   el('costCard').hidden = false;
   el('goodCard').hidden = false;
